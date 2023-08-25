@@ -1,0 +1,13 @@
+{
+    "tasks": {
+        "dev": "cmd.exe /c start bash -c 'deno run -A --watch src/mod.ts'",
+        "test": "cmd.exe /c start bash -c 'deno test -A --watch src'",
+        "build": "clear && deno run -A build_npm.ts",
+        "publish": "clear && cd npm && npm publish"
+    },
+    "importMap": "./import_map.json",
+    "compilerOptions": {
+        "noImplicitAny": false,
+        "suppressImplicitAnyIndexErrors": true
+    }
+}

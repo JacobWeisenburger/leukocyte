@@ -1,0 +1,7 @@
+{
+    "deno.enable": true,
+    "deno.lint": false,
+    "editor.formatOnSave": true,
+    "git.enableSmartCommit": true,
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+}
