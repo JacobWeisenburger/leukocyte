@@ -268,7 +268,10 @@ function makeStringSchema<
     } )
 }
 
-const l = {
+
+// console.log( 'hello leukocyte' )
+
+export const leukocyte = {
     schema: makeSchema,
     string: makeStringSchema,
     // number: makeSchema( 'number' ),
@@ -285,6 +288,8 @@ const l = {
     // unknown: makeSchema( 'unknown' ),
     // never: makeSchema( 'never' ),
 }
+export const l = leukocyte
+
 
 // const stringSchema = l.string( {
 //     // length: 3,

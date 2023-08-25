@@ -1,10 +1,6 @@
 {
     "imports": {
-        "temporal": "npm:@js-temporal/polyfill",
-        "@type-challenges/utils": "npm:@type-challenges/utils",
-        "radash": "npm:radash",
-        "zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
-        "dnt": "https://deno.land/x/dnt@0.38.1/mod.ts",
-        "std/": "https://deno.land/std@0.179.0/"
+        "dnt": "https://deno.land/x/dnt@0.37.0/mod.ts",
+        "std/": "https://deno.land/std@0.200.0/"
     }
 }

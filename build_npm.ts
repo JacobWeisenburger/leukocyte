@@ -8,14 +8,14 @@ await build( {
         name: 'leukocyte',
         version: '0.0.1',
         author: 'JacobWeisenburger',
-        description: 'Pippity poppity give me the leukocyte',
+        description: 'Customizable validation with type inference',
         license: 'MIT',
         npm: 'https://www.npmjs.com/package/leukocyte',
         deno: 'https://deno.land/x/leukocyte',
         repository: 'https://github.com/JacobWeisenburger/leukocyte',
         homepage: 'https://github.com/JacobWeisenburger/leukocyte',
     },
-    entryPoints: [ './mod.ts' ],
+    entryPoints: [ './src/mod.ts' ],
     importMap: './import_map.json',
     outDir: './npm',
     shims: { deno: true, undici: true },
@@ -24,7 +24,7 @@ await build( {
         strictNullChecks: true,
     },
 
-    // typeCheck: false,
+    typeCheck: false,
     skipSourceOutput: true,
     // mappings: {
     //     'https://deno.land/x/zod@v3.21.4/mod.ts': {
@@ -36,12 +36,14 @@ await build( {
 } )
 
 try {
+    console.log( `copyFile( 'LICENSE', 'npm/LICENSE' )` )
     await Deno.copyFile( 'LICENSE', 'npm/LICENSE' )
 } catch ( error ) {
     console.error( error )
 }
 
 try {
+    console.log( `copyFile( 'README.md', 'npm/README' )` )
     await Deno.copyFile( 'README.md', 'npm/README.md' )
 } catch ( error ) {
     console.error( error )
