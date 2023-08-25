@@ -1,5 +1,5 @@
 import { bindMakeIssue } from './Issue.ts'
-import { SchemaProps, Check, makeSchema } from './Schema.ts'
+import { SchemaProps, Check, makeSchema } from './makeSchema.ts'
 
 export function makeBooleanSchema<const Props extends Omit<SchemaProps, 'baseType'>> ( props: Props = {} as Props ) {
 

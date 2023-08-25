@@ -1,4 +1,4 @@
-import { AnySchema } from "./Schema.ts"
+import { AnySchema } from './makeSchema.ts'
 
 const dateIssueCodes = [
     'max',
@@ -46,7 +46,6 @@ const baseTypesToIssueCodesConfig = {
     ],
     boolean: [],
     symbol: [],
-    nan: [],
     any: [],
     unknown: [],
     never: [],

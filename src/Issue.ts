@@ -1,4 +1,4 @@
-import { SchemaProps } from './Schema.ts'
+import { SchemaProps } from './makeSchema.ts'
 import { baseTypeIssueCodes } from './baseTypes.ts'
 
 export type IssueCode = typeof issueCodes[ number ]

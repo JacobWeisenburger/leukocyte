@@ -1,14 +1,12 @@
 import { bindMakeIssue } from './Issue.ts'
-import { SchemaProps, Check, makeSchema } from './Schema.ts'
+import { SchemaProps, Check, makeSchema } from './makeSchema.ts'
 
 export function makeNumberSchema<
     const Props extends Omit<SchemaProps, 'baseType'> & {
         readonly max?: number
         readonly min?: number
         readonly gt?: number
-        readonly gte?: number
         readonly lt?: number
-        readonly lte?: number
         readonly multipleOf?: number
         readonly integer?: boolean
         readonly positive?: boolean
@@ -82,11 +80,7 @@ export function makeNumberSchema<
             max: <Value extends number> ( max: Value ) => makeNumberSchema( { ...prevProps, max } ),
             min: <Value extends number> ( min: Value ) => makeNumberSchema( { ...prevProps, min } ),
             gt: <Value extends number> ( gt: Value ) => makeNumberSchema( { ...prevProps, gt } ),
-            gte: <Value extends number> ( gte: Value ) => makeNumberSchema( { ...prevProps, gte } ),
             lt: <Value extends number> ( lt: Value ) => makeNumberSchema( { ...prevProps, lt } ),
-            lte: <Value extends number> ( lte: Value ) => makeNumberSchema( { ...prevProps, lte } ),
-            multipleOf: <Value extends number> ( multipleOf: Value ) =>
-                makeNumberSchema( { ...prevProps, multipleOf } ),
             integer: () => makeNumberSchema( { ...prevProps, integer: true } ),
             positive: () => makeNumberSchema( { ...prevProps, positive: true } ),
             nonPositive: () => makeNumberSchema( { ...prevProps, nonPositive: true } ),
@@ -94,6 +88,8 @@ export function makeNumberSchema<
             nonNegative: () => makeNumberSchema( { ...prevProps, nonNegative: true } ),
             finite: () => makeNumberSchema( { ...prevProps, finite: true } ),
             safe: () => makeNumberSchema( { ...prevProps, safe: true } ),
+            multipleOf: <Value extends number> ( multipleOf: Value ) =>
+                makeNumberSchema( { ...prevProps, multipleOf } ),
         } ),
     } )
 }

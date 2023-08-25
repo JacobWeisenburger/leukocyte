@@ -1,6 +1,6 @@
 import { bindMakeIssue } from './Issue.ts'
 import { Regex } from './Regex.ts'
-import { Check, SchemaProps, makeSchema } from './Schema.ts'
+import { Check, SchemaProps, makeSchema } from './makeSchema.ts'
 
 export function makeStringSchema<
     const Props extends Omit<SchemaProps, 'baseType'> & {

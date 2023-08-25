@@ -60,9 +60,11 @@ export function makeSchema<
     const makeIssue = bindMakeIssue( props )
 
     const checkWrapper: Check = x => {
+        if ( props.baseType === 'any' ) return
+
         if ( x === undefined ) {
             if ( props.optional ) return
-            if ( 'literalValue' in props && props.literalValue === undefined ) return
+            // if ( 'expected' in props && props.expected === undefined ) return
             return makeIssue( { code: 'required', message: 'Required' } )
         }
 

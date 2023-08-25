@@ -1,5 +1,5 @@
 import { bindMakeIssue } from './Issue.ts'
-import { Check, makeSchema } from './Schema.ts'
+import { Check, makeSchema } from './makeSchema.ts'
 import { stringify } from './utils.ts'
 
 export function makeLiteralSchema<const Expected> ( expected: Expected ) {
@@ -8,6 +8,15 @@ export function makeLiteralSchema<const Expected> ( expected: Expected ) {
 
     const check: Check = x => {
         const stringifiedLiteralValue = stringify( expected )
+
+        if ( typeof expected == 'number' && isNaN( expected ) ) {
+            if ( typeof x == 'number' && isNaN( x ) ) return
+            // makeIssue( {
+            //     code: 'literal:incorrectValue', message: `value is not ${ stringifiedLiteralValue }`,
+            // } )
+            // return
+        }
+
         if ( x !== expected ) return makeIssue( {
             code: 'literal:incorrectValue', message: `value is not ${ stringifiedLiteralValue }`,
         } )
