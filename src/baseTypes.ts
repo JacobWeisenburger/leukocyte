@@ -49,6 +49,8 @@ const baseTypesToIssueCodesConfig = {
     any: [],
     unknown: [],
     never: [],
+
+    union: [],
 } as const
 
 export type BaseType = keyof typeof baseTypesToIssueCodesConfig
@@ -65,6 +67,7 @@ export type InferBaseTypeFromSchema<Schema extends AnySchema> =
     : never
 
 export type InferTypeFromSchema<Schema extends AnySchema> =
+    // Schema[ 'props' ][ 'baseTypes' ] extends ( infer T )[] ? T :
     InferBaseTypeFromSchema<Schema>
     | ( Schema[ 'props' ][ 'optional' ] extends true ? undefined : never )
     | ( Schema[ 'props' ][ 'nullable' ] extends true ? null : never )

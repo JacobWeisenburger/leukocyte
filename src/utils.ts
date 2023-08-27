@@ -1,7 +1,10 @@
 type LooseAutocomplete<T extends string> = T | ( string & {} )
 type AnyFn = ( ...args: any[] ) => any
 
-export type Result<Value, Error> = { value?: Value, error?: Error }
+export type Result<Value, Error> =
+    | { success: true, value: Value }
+    | { success: false, error: Error }
+// export type Result<Value, Error> = { success: boolean, value?: Value, error?: Error }
 
 export function stringify ( x: unknown ) {
     if ( x && typeof x == 'object' && 'toJSON' in x && typeof x.toJSON === 'function' )

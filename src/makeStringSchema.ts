@@ -58,19 +58,19 @@ export function makeStringSchema<
         } )
     }
 
-    return makeSchema( {
+    return makeSchema<string>()( {
         check,
         props: propsWithBaseType,
         methods: prevProps => ( {
-            length: <Value extends number> ( length: Value ) => makeStringSchema( { ...prevProps, length } ),
-            max: <Value extends number> ( maxLength: Value ) => makeStringSchema( { ...prevProps, maxLength } ),
-            min: <Value extends number> ( minLength: Value ) => makeStringSchema( { ...prevProps, minLength } ),
+            length: <T extends number> ( length: T ) => makeStringSchema( { ...prevProps, length } ),
+            max: <T extends number> ( maxLength: T ) => makeStringSchema( { ...prevProps, maxLength } ),
+            min: <T extends number> ( minLength: T ) => makeStringSchema( { ...prevProps, minLength } ),
             url: () => makeStringSchema( { ...prevProps, pattern: 'url' } ),
             emoji: () => makeStringSchema( { ...prevProps, pattern: 'emoji' } ),
             email: () => makeStringSchema( { ...prevProps, pattern: 'email' } ),
-            includes: <Value extends string> ( includes: Value ) => makeStringSchema( { ...prevProps, includes } ),
-            startsWith: <Value extends string> ( startsWith: Value ) => makeStringSchema( { ...prevProps, startsWith } ),
-            endsWith: <Value extends string> ( endsWith: Value ) => makeStringSchema( { ...prevProps, endsWith } ),
+            includes: <T extends string> ( includes: T ) => makeStringSchema( { ...prevProps, includes } ),
+            startsWith: <T extends string> ( startsWith: T ) => makeStringSchema( { ...prevProps, startsWith } ),
+            endsWith: <T extends string> ( endsWith: T ) => makeStringSchema( { ...prevProps, endsWith } ),
         } ),
     } )
 }

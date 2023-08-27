@@ -11,12 +11,9 @@ export function makeLiteralSchema<const Expected> ( expected: Expected ) {
 
         if ( typeof expected == 'number' && isNaN( expected ) ) {
             if ( typeof x == 'number' && isNaN( x ) ) return
-            // makeIssue( {
-            //     code: 'literal:incorrectValue', message: `value is not ${ stringifiedLiteralValue }`,
-            // } )
-            // return
         }
 
+        // console.log( { x, expected } )
         if ( x !== expected ) return makeIssue( {
             code: 'literal:incorrectValue', message: `value is not ${ stringifiedLiteralValue }`,
         } )

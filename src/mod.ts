@@ -6,60 +6,58 @@ import { makeBooleanSchema } from './makeBooleanSchema.ts'
 import { makeDateSchema } from './makeDateSchema.ts'
 import { makeLiteralSchema } from './makeLiteralSchema.ts'
 import { makeNumberSchema } from './makeNumberSchema.ts'
-import { AnySchema, makeSchema } from './makeSchema.ts'
+import { AnySchema, Schema, makeSchema } from './makeSchema.ts'
 import { makeStringSchema } from './makeStringSchema.ts'
 import { makeSymbolSchema } from './makeSymbolSchema.ts'
+import { makeUnionSchema } from './makeUnionSchema.ts'
 import { testSchema } from './testSchema.ts'
 
 export module l {
-    export type infer<Schema extends AnySchema> = InferTypeFromSchema<Schema>
+    export type infer<S extends AnySchema> = S extends Schema<infer Val, any, any> ? Val : never
+    // export type infer<Schema extends AnySchema> = InferTypeFromSchema<Schema>
 }
 
 export const l = {
     schema: makeSchema,
     string: makeStringSchema,
-    number: makeNumberSchema,
-    boolean: makeBooleanSchema,
-    bigint: makeBigintSchema,
-    date: makeDateSchema,
-    symbol: makeSymbolSchema,
-    any: () => makeSchema( {
-        check () { },
-        props: { baseType: 'any' },
-    } ),
-    // unknown: makeSchema( 'unknown' ),
-    // never: makeSchema( 'never' ),
+    // number: makeNumberSchema,
+    // boolean: makeBooleanSchema,
+    // bigint: makeBigintSchema,
+    // date: makeDateSchema,
+    // symbol: makeSymbolSchema,
+    // any: () => makeSchema( { props: { baseType: 'any' } } ),
+    // unknown: () => makeSchema( { props: { baseType: 'unknown' } } ),
+    // never: () => makeSchema( { props: { baseType: 'never' } } ),
+    // literal: makeLiteralSchema,
+    // null: () => l.literal( null ),
+    // undefined: () => l.literal( undefined ),
+    // void: () => l.literal( undefined ),
+    // nan: () => l.literal( NaN ),
 
-    literal: makeLiteralSchema,
-    null: () => l.literal( null ),
-    undefined: () => l.literal( undefined ),
-    void: () => l.literal( undefined ),
-    nan: () => l.literal( NaN ),
+    // union: makeUnionSchema,
 }
 export { l as leukocyte }
 
-const stringSchema = l.string().length( 3 ).includes( 'foo' ).nullish()
-const numberSchema = l.number().max( 3 ).integer().nullable()
-const booleanSchema = l.boolean().nullish()
-const literalSchema = l.literal( 42 )
-const bigintSchema = l.bigint()
-const dateSchema = l.date()
-const nanSchema = l.nan()
+// const numberSchema = l.number().max( 3 ).integer().nullable()
+// const booleanSchema = l.boolean().nullish()
+// const literalSchema = l.literal( 42 )
+// const bigintSchema = l.bigint()
+// const dateSchema = l.date()
+// const nanSchema = l.nan()
 
-const nullSchema = l.null()
-const undefinedSchema = l.undefined()
-const voidSchema = l.void()
+// const nullSchema = l.null()
+// const undefinedSchema = l.undefined()
+// const voidSchema = l.void()
 
-type stringType = l.infer<typeof stringSchema>
-type numberType = l.infer<typeof numberSchema>
-type booleanType = l.infer<typeof booleanSchema>
-type literalType = l.infer<typeof literalSchema>
-type bigintType = l.infer<typeof bigintSchema>
-type dateType = l.infer<typeof dateSchema>
-type nanType = l.infer<typeof nanSchema>
-type nullType = l.infer<typeof nullSchema>
-type undefinedType = l.infer<typeof undefinedSchema>
-type voidType = l.infer<typeof voidSchema>
+// type numberType = l.infer<typeof numberSchema>
+// type booleanType = l.infer<typeof booleanSchema>
+// type literalType = l.infer<typeof literalSchema>
+// type bigintType = l.infer<typeof bigintSchema>
+// type dateType = l.infer<typeof dateSchema>
+// type nanType = l.infer<typeof nanSchema>
+// type nullType = l.infer<typeof nullSchema>
+// type undefinedType = l.infer<typeof undefinedSchema>
+// type voidType = l.infer<typeof voidSchema>
 
 // console.log(
 //     Object.fromEntries(
@@ -102,20 +100,30 @@ type voidType = l.infer<typeof voidSchema>
 // testSchema( nanSchema )
 // testSchema( dateSchema )
 // testSchema( l.string().url() )
-testSchema( l.any() )
+// testSchema( l.any() )
+// testSchema( l.unknown() )
+// testSchema( l.never() )
+// testSchema( literalSchema )
+// testSchema( undefinedSchema )
+// testSchema( nullSchema )
+// testSchema( voidSchema )
 
-// testSchema( l.string() )
-// testSchema( l.string().optional() )
-// testSchema( l.string().optional().required() )
-// testSchema( l.string().optional().nullable() )
-// testSchema( l.string().nullable() )
-// testSchema( l.string().nullable().nonNullable() )
-// testSchema( l.string().nullish() )
-// testSchema( l.string().min( 7 ) )
-// testSchema( l.string().max( 7 ) )
-// testSchema( l.string().includes( 'foo' ) )
-// testSchema( l.string().startsWith( 'foo' ) )
-// testSchema( l.string().endsWith( 'foo' ) )
-// testSchema( l.string().email() )
-// testSchema( l.string().emoji() )
-// testSchema( l.string().url() )
+// type stringType = l.infer<typeof stringSchema>
+const stringSchema = l.string()
+    // .length( 3 )
+    // .includes( 'foo' )
+    // // .nullish()
+    .optional()
+stringSchema.props.baseType
+stringSchema.props.optional
+const result = stringSchema.validate( 'foo' )
+result.success && result.value
+
+// const unionSchema = l.union( [
+//     l.string().optional().nullable(),
+//     l.union( [ l.number(), l.boolean() ] ).optional().nullable(),
+// ] )
+// unionSchema.props.baseTypes
+// type unionType = l.infer<typeof unionSchema>
+// testSchema( unionSchema )
+// const value = unionSchema.validate( 'foo' ).value
