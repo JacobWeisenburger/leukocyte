@@ -15,6 +15,7 @@ export function makeNumberSchema<
         readonly nonNegative?: boolean
         readonly finite?: boolean
         readonly safe?: boolean
+        readonly allowNaN?: boolean
     }
 > ( props: Props = {} as Props ) {
 
@@ -23,6 +24,7 @@ export function makeNumberSchema<
 
     const check: Check = x => {
         if ( typeof x !== 'number' ) return makeIssue( { code: 'invalidType' } )
+        if ( !props.allowNaN && isNaN( x ) ) return makeIssue( { code: 'invalidType' } )
 
         if ( props.max && x > props.max ) return makeIssue( {
             code: 'number:max', message: `number is greater than ${ props.max }`,
@@ -73,7 +75,7 @@ export function makeNumberSchema<
         } )
     }
 
-    return makeSchema( {
+    return makeSchema<number>()( {
         check,
         props: propsWithBaseType,
         methods: prevProps => ( {
@@ -88,6 +90,7 @@ export function makeNumberSchema<
             nonNegative: () => makeNumberSchema( { ...prevProps, nonNegative: true } ),
             finite: () => makeNumberSchema( { ...prevProps, finite: true } ),
             safe: () => makeNumberSchema( { ...prevProps, safe: true } ),
+            allowNaN: () => makeNumberSchema( { ...prevProps, allowNaN: true } ),
             multipleOf: <Value extends number> ( multipleOf: Value ) =>
                 makeNumberSchema( { ...prevProps, multipleOf } ),
         } ),

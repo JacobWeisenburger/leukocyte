@@ -1,4 +1,4 @@
-import { AnySchema } from './makeSchema.ts'
+import { AnySchema, Schema } from './makeSchema.ts'
 
 const dateIssueCodes = [
     'max',
@@ -50,35 +50,24 @@ const baseTypesToIssueCodesConfig = {
     unknown: [],
     never: [],
 
-    union: [],
+    // union: [],
 } as const
 
 export type BaseType = keyof typeof baseTypesToIssueCodesConfig
 
-export type InferBaseTypeFromSchema<Schema extends AnySchema> =
-    'string' extends Schema[ 'props' ][ 'baseType' ] ? string
-    : 'number' extends Schema[ 'props' ][ 'baseType' ] ? number
-    : 'bigint' extends Schema[ 'props' ][ 'baseType' ] ? bigint
-    : 'date' extends Schema[ 'props' ][ 'baseType' ] ? Date
-    : 'boolean' extends Schema[ 'props' ][ 'baseType' ] ? boolean
-    : 'literal' extends Schema[ 'props' ][ 'baseType' ] ? Schema[ 'props' ] extends {
-        expected: infer Expected
-    } ? Expected : never
-    : never
-
-export type InferTypeFromSchema<Schema extends AnySchema> =
-    // Schema[ 'props' ][ 'baseTypes' ] extends ( infer T )[] ? T :
-    InferBaseTypeFromSchema<Schema>
-    | ( Schema[ 'props' ][ 'optional' ] extends true ? undefined : never )
-    | ( Schema[ 'props' ][ 'nullable' ] extends true ? null : never )
+export type InferTypeFromSchema<schema extends AnySchema> = schema extends Schema<infer Val, {}, {}> ? Val : never
 
 export const baseTypeIssueCodes = (
     Object.keys( baseTypesToIssueCodesConfig ) as BaseType[]
 ).flatMap( baseType =>
     baseTypesToIssueCodesConfig[ baseType ].map( code => `${ baseType }:${ code }` as const ) as any as {
-        [ K in BaseType ]:
-        typeof baseTypesToIssueCodesConfig[ K ] extends readonly ( infer T )[]
-        ? T extends string ? `${ K }:${ T }` : never
+        [ Key in BaseType ]:
+        typeof baseTypesToIssueCodesConfig[ Key ] extends readonly ( infer SubCode )[]
+        ? SubCode extends string ? `${ Key }:${ SubCode }` : never
         : never
     }[ BaseType ]
 )
+
+type test1 = any[] extends ( infer T extends string )[] ? T : false
+type test2 = never[] extends ( infer T extends string )[] ? T : false
+// type test2 = string extends never ? true : false

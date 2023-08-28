@@ -10,7 +10,7 @@ export function makeBooleanSchema<const Props extends Omit<SchemaProps, 'baseTyp
         if ( typeof x !== 'boolean' ) return makeIssue( { code: 'invalidType' } )
     }
 
-    return makeSchema( {
+    return makeSchema<boolean>()( {
         check,
         props: propsWithBaseType,
     } )

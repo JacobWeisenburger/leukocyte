@@ -37,7 +37,7 @@ export function makeDateSchema<
         } )
     }
 
-    return makeSchema( {
+    return makeSchema<Date>()( {
         check,
         props: propsWithBaseType,
         methods: prevProps => ( {

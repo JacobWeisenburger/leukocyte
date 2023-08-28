@@ -10,7 +10,7 @@ export function makeSymbolSchema<const Props extends Omit<SchemaProps, 'baseType
         if ( typeof x !== 'symbol' ) return makeIssue( { code: 'invalidType' } )
     }
 
-    return makeSchema( {
+    return makeSchema<symbol>()( {
         check,
         props: propsWithBaseType,
     } )

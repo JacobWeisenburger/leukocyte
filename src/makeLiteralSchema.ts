@@ -19,7 +19,7 @@ export function makeLiteralSchema<const Expected> ( expected: Expected ) {
         } )
     }
 
-    return makeSchema( {
+    return makeSchema<Expected>()( {
         check,
         props: propsWithBaseType,
     } )

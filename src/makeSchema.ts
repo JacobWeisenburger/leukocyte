@@ -2,30 +2,31 @@ import { BaseIssue, Issue, IssueCode, bindMakeIssue } from './Issue.ts'
 import { BaseType } from './baseTypes.ts'
 import { Result } from './utils.ts'
 
-export type Check = ( x: unknown ) => Issue[ 'message' ] | Issue | void
+export type Check = ( x: unknown ) => Issue[ 'message' ] | Issue | Issue[] | void
 
-export type Validate<Value> = ( x: unknown ) => Result<Value, Issue>
+export type Validate<Value> = ( x: unknown ) => Result<Value, Issue[]>
 const makeValidate = <Value> ( check: Check ): Validate<Value> => x => {
     const result = check( x )
     if ( result === undefined ) return { success: true, value: x as Value }
 
     const baseIssue: BaseIssue = { code: 'unknownError', received: x }
 
-    if ( typeof result === 'string' ) return { success: false, error: { ...baseIssue, message: result } }
-    return { success: false, error: { ...baseIssue, ...result } }
+    if ( typeof result === 'string' ) return { success: false, error: [ { ...baseIssue, message: result } ] }
+    if ( Array.isArray( result ) ) return { success: false, error: result.map( x => ( { ...baseIssue, ...x } ) ) }
+    return { success: false, error: [ { ...baseIssue, ...result } ] }
 }
 
 type ErrorMap = Partial<Record<IssueCode, string>>
 
 export type SchemaProps = {
     readonly baseType?: BaseType
-    // readonly baseTypes?: ( BaseType | undefined )[]
     readonly errorMap?: ErrorMap
     readonly nullable?: boolean
     readonly optional?: boolean
 }
 
-export type AnySchema = Schema<unknown, SchemaProps, {}>
+export type AnySchema = Schema<any, SchemaProps, {}>
+// export type AnySchema = Schema<unknown, SchemaProps, {}>
 export type Schema<
     Value,
     Props extends SchemaProps,
@@ -46,19 +47,14 @@ type SchemaMethods<
     Props extends SchemaProps,
     Methods extends object,
 > = {
-    optional (): Schema<Value, Omit<Props, 'optional'> & { readonly optional: true }, Methods>
-    required (): Schema<Value, Omit<Props, 'optional'> & { readonly optional: false }, Methods>
-    nullable (): Schema<Value, Omit<Props, 'nullable'> & { readonly nullable: true }, Methods>
-    nonNullable (): Schema<Value, Omit<Props, 'nullable'> & { readonly nullable: false }, Methods>
-    nullish (): Schema<Value, Omit<Props, 'nullable' | 'optional'> & {
+    optional (): Schema<Value | undefined, Omit<Props, 'optional'> & { readonly optional: true }, Methods>
+    required (): Schema<Exclude<Value, undefined>, Omit<Props, 'optional'> & { readonly optional: false }, Methods>
+    nullable (): Schema<Value | null, Omit<Props, 'nullable'> & { readonly nullable: true }, Methods>
+    nonNullable (): Schema<Exclude<Value, null>, Omit<Props, 'nullable'> & { readonly nullable: false }, Methods>
+    nullish (): Schema<Value | null | undefined, Omit<Props, 'nullable' | 'optional'> & {
         readonly nullable: true, readonly optional: true
     }, Methods>
 }
-
-type GetVal<Value, Props extends SchemaProps> =
-    | Value
-    | ( Props[ 'nullable' ] extends true ? null : never )
-    | ( Props[ 'optional' ] extends true ? undefined : never )
 
 export const makeSchema = <Value> () => <
     const Props extends SchemaProps,
@@ -71,7 +67,7 @@ export const makeSchema = <Value> () => <
     readonly check?: Check,
     readonly props?: Props,
     readonly methods?: ( prevProps: Props ) => Methods,
-} ): Schema<GetVal<Value, Props>, Props, Methods> => {
+} ): Schema<Value, Props, Methods> => {
     const makeIssue = bindMakeIssue( props )
 
     const checkWrapper: Check = x => {
@@ -102,19 +98,19 @@ export const makeSchema = <Value> () => <
 
         validate: makeValidate<Value>( checkWrapper ),
 
-        optional: () => makeSchema<Value>()( {
+        optional: () => makeSchema<Value | undefined>()( {
             check, methods, props: { ...newProps, optional: true }
         } ),
-        required: () => makeSchema<Value>()( {
+        required: () => makeSchema<Exclude<Value, undefined>>()( {
             check, methods, props: { ...newProps, optional: false }
         } ),
-        nullable: () => makeSchema<Value>()( {
+        nullable: () => makeSchema<Value | null>()( {
             check, methods, props: { ...newProps, nullable: true }
         } ),
-        nonNullable: () => makeSchema<Value>()( {
+        nonNullable: () => makeSchema<Exclude<Value, null>>()( {
             check, methods, props: { ...newProps, nullable: false }
         } ),
-        nullish: () => makeSchema<Value>()( {
+        nullish: () => makeSchema<Value | null | undefined>()( {
             check, methods, props: { ...newProps, nullable: true, optional: true }
         } ),
     }

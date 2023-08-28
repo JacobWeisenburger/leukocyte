@@ -58,7 +58,7 @@ export function makeBigintSchema<
         } )
     }
 
-    return makeSchema( {
+    return makeSchema<bigint>()( {
         check,
         props: propsWithBaseType,
         methods: prevProps => ( {
