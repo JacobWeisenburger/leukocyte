@@ -1,6 +1,5 @@
 // start bash -c 'deno run -A --watch src/2023-12/mod.ts'
 
-import { bindMakeIssue } from './Issue.ts'
 import { testSchema } from './testSchema.ts'
 import { AnySchema, makeSchema } from './makeSchema.ts'
 import { makeStringSchema } from './makeStringSchema.ts'
@@ -24,11 +23,18 @@ export { l as leukocyte }
 
 test_schema()
 function test_schema () {
-    const props = { baseType: 'number' } as const
-    const schema = l.schema<number>()( {
-        props,
+    const schema = l.schema<string>()( {
+        props: {
+            baseType: 'string',
+            // optional: true,
+            // nullable: true,
+            // length: 3,
+        },
         check: x => {
-            if ( typeof x !== 'number' ) return 'invalidType'
+            if ( typeof x !== 'string' ) return 'Not a string'
+
+            if ( schema.props.length && x.length !== schema.props.length )
+                return `length is not ${ schema.props.length }`
         },
     } )
     // type Data = l.infer<typeof schema>

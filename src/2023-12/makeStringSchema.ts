@@ -7,7 +7,7 @@ export function makeStringSchema<
         readonly length?: number
         readonly maxLength?: number
         readonly minLength?: number
-        readonly pattern?: 'url' | 'emoji' | 'email'
+        readonly pattern?: 'url'
         readonly includes?: string
         readonly startsWith?: string
         readonly endsWith?: string
@@ -57,8 +57,6 @@ export function makeStringSchema<
         //     max: <T extends number> ( maxLength: T ) => makeStringSchema( { ...prevProps, maxLength } ),
         //     min: <T extends number> ( minLength: T ) => makeStringSchema( { ...prevProps, minLength } ),
         //     url: () => makeStringSchema( { ...prevProps, pattern: 'url' } ),
-        //     emoji: () => makeStringSchema( { ...prevProps, pattern: 'emoji' } ),
-        //     email: () => makeStringSchema( { ...prevProps, pattern: 'email' } ),
         //     includes: <T extends string> ( includes: T ) => makeStringSchema( { ...prevProps, includes } ),
         //     startsWith: <T extends string> ( startsWith: T ) => makeStringSchema( { ...prevProps, startsWith } ),
         //     endsWith: <T extends string> ( endsWith: T ) => makeStringSchema( { ...prevProps, endsWith } ),

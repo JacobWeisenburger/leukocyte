@@ -24,8 +24,6 @@ const baseTypesToIssueCodesConfig = {
         'maxLength',
         'minLength',
         'url',
-        'emoji',
-        'email',
         'includes',
         'startsWith',
         'endsWith'
@@ -46,16 +44,17 @@ const baseTypesToIssueCodesConfig = {
     ],
     boolean: [],
     // symbol: [],
-    // any: [],
-    // unknown: [],
-    // never: [],
+    any: [],
+    unknown: [],
+    never: [],
 
     // union: [],
 } as const
 
 export type BaseType = keyof typeof baseTypesToIssueCodesConfig
 
-export type InferTypeFromSchema<schema extends AnySchema> = schema extends Schema<infer Val, {}, {}> ? Val : never
+export type InferTypeFromSchema<schema extends AnySchema> =
+    schema extends Schema<infer Val, { baseType: 'unknown' }> ? Val : never
 
 export const baseTypeIssueCodes = (
     Object.keys( baseTypesToIssueCodesConfig ) as BaseType[]

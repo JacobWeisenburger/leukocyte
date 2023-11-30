@@ -1,5 +1,6 @@
 import { Validate } from './Validate.ts'
 import * as colors from 'std/fmt/colors.ts'
+import { AnySchema } from "./makeSchema.ts"
 
 Function.prototype[ Symbol.for( 'Deno.customInspect' ) ] = function () {
     return colors.cyan( ( `[Function] ${ this }` ) )
@@ -11,10 +12,10 @@ Date.prototype[ Symbol.for( 'Deno.customInspect' ) ] = function () {
     return colors.magenta( ( `[Date] ${ this.toISOString() }` ) )
 }
 URL.prototype[ Symbol.for( 'Deno.customInspect' ) ] = function () {
-    return colors.cyan( `[URL] ${ this.toString() }` )
+    return colors.brightCyan( `[URL] ${ this.toString() }` )
 }
 
-export const generalTestValues = [
+const testValues = [
     undefined,
     null,
     NaN,
@@ -29,47 +30,36 @@ export const generalTestValues = [
     /regex/,
     new Date,
     new URL( 'a:' ),
+    -42,
+    0,
+    -42n,
+    0n,
+    '🤖',
+    'foo@foo.foo',
+    'foo:foo',
 ] as const
 
-type Schema<Data> = {
-    props: object
-    validate: Validate<Data>
-}
+// type Schema<Data> = {
+//     props: object
+//     validate: Validate<Data>
+// }
 
-function stringifyWithQuotes ( x: unknown ) {
-    if ( x && typeof x == 'object' && 'toJSON' in x && typeof x.toJSON === 'function' )
-        return x.toJSON()
-
-    if ( typeof x == 'string' ) return JSON.stringify( x )
-    if ( typeof x == 'object' ) return JSON.stringify( x )
-    if ( typeof x == 'bigint' ) return `${ x }n`
-
-    return String( x )
-}
-
-export function testSchema ( schema: Schema<unknown> ) {
-    const results = [
-        ...generalTestValues,
-        -42,
-        0,
-        -42n,
-        0n,
-        '🤖',
-        'foo@foo.foo',
-        'foo:foo',
-    ].reduce(
+export function testSchema<Schema extends AnySchema> ( schema: Schema ) {
+    const passKey = [
+        schema.props.baseType,
+        schema.props.nullable && 'null',
+        schema.props.optional && 'undefined',
+    ].filter( Boolean ).join( ' | ' )
+    const results = testValues.reduce(
         ( map: Map<string, Set<any>>, x ) => {
+            schema.props
             const result = schema.validate( x )
-            const key = result.pass ? 'pass' : 'fail'
-            const value = x
-            // const value = stringifyWithQuotes( x )
+            const key = result.pass ? passKey : result.error[ 0 ].message
             const set = map.get( key ) ?? new Set()
-            return map.set( key, set.add( value ) )
+            return map.set( key, set.add( x ) )
         },
-        new Map<string, Set<any>>( [
-            [ 'pass', new Set() ],
-            [ 'fail', new Set() ],
-        ] )
+        // new Map<string, Set<any>>()
+        new Map<string, Set<any>>( [ [ passKey, new Set() ] ] )
     )
     console.log( 'schema.props', schema.props )
     console.log( results )
