@@ -8,8 +8,8 @@ type ErrorMap = Partial<Record<IssueCode, string>>
 export type SchemaProps = {
     readonly baseType: BaseType
     readonly errorMap?: ErrorMap
-    readonly nullable?: boolean
-    readonly optional?: boolean
+    readonly canBeNull?: boolean
+    readonly canBeUndefined?: boolean
 }
 
 // export type AnySchema = Schema<any, SchemaProps>
@@ -17,40 +17,42 @@ export type AnySchema = Schema<unknown, SchemaProps>
 export type Schema<Data, Props extends SchemaProps> = {
     readonly validate: Validate<Data>
     readonly props: Props & {
-        readonly optional: unknown extends Props[ 'optional' ] ? boolean | undefined : Props[ 'optional' ]
-        readonly nullable: unknown extends Props[ 'nullable' ] ? boolean | undefined : Props[ 'nullable' ]
+        readonly canBeUndefined: unknown extends Props[ 'canBeUndefined' ]
+        ? false : Props[ 'canBeUndefined' ]
+        readonly canBeNull: unknown extends Props[ 'canBeNull' ]
+        ? false : Props[ 'canBeNull' ]
     }
 }
 
-export const makeSchema = <Data> () => <
-    const Props extends SchemaProps
-> ( {
-    props = {} as Props,
-    check = () => { },
-}: {
-    readonly props?: Props,
-    readonly check?: Check,
-} ): Schema<Data, Props> => {
+export const makeSchema = <Data> () => <const Props extends SchemaProps>
+    ( {
+        props = {} as Props,
+        check = () => { },
+    }: {
+        readonly props?: Props,
+        readonly check?: Check<Props>,
+    } ): Schema<Data, Props> => {
     const makeIssue = bindMakeIssue( props )
 
-    const checkWrapper: Check = x => {
-        if ( props.baseType === 'never' ) return makeIssue( { code: 'never', message: 'No value will pass' } )
-        if ( props.baseType === 'unknown' ) return
-        if ( props.baseType === 'any' ) return
-
-        if ( x === undefined ) {
-            if ( props.optional ) return
-            // if ( 'expected' in props && props.expected === undefined ) return
-            return makeIssue( { code: 'required', message: 'Required' } )
-        }
-
-        if ( x === null && props.nullable ) return
-
-        return check( x )
-    }
-
     return {
-        props: { nullable: false, optional: false, ...props },
-        validate: makeValidate<Data>( checkWrapper ),
+        props: { canBeNull: false, canBeUndefined: false, ...props } as const,
+        validate: makeValidate<Data>(
+            props,
+            ( ...args ) => {
+                const x = args[ 0 ]
+
+                if ( props.baseType === 'never' ) return makeIssue( { code: 'never', message: 'No value will pass' } )
+                if ( props.baseType === 'unknown' ) return
+                if ( props.baseType === 'any' ) return
+
+                if ( x === undefined && props.canBeUndefined ) return
+                if ( x === null && props.canBeNull ) return
+
+                if ( args.length < 1 )
+                    return makeIssue( { code: 'required', message: 'Required' } )
+
+                return check( x, props )
+            }
+        ),
     }
 }

@@ -16,6 +16,7 @@ URL.prototype[ Symbol.for( 'Deno.customInspect' ) ] = function () {
 }
 
 const testValues = [
+    void 0,
     undefined,
     null,
     NaN,
@@ -47,12 +48,13 @@ const testValues = [
 export function testSchema<Schema extends AnySchema> ( schema: Schema ) {
     const passKey = [
         schema.props.baseType,
-        schema.props.nullable && 'null',
-        schema.props.optional && 'undefined',
+        schema.props.canBeNull && 'null',
+        schema.props.canBeUndefined && 'undefined',
     ].filter( Boolean ).join( ' | ' )
     const results = testValues.reduce(
         ( map: Map<string, Set<any>>, x ) => {
             schema.props
+            // const result = schema.validate()
             const result = schema.validate( x )
             const key = result.pass ? passKey : result.error[ 0 ].message
             const set = map.get( key ) ?? new Set()
@@ -61,9 +63,16 @@ export function testSchema<Schema extends AnySchema> ( schema: Schema ) {
         // new Map<string, Set<any>>()
         new Map<string, Set<any>>( [ [ passKey, new Set() ] ] )
     )
-    console.log( 'schema.props', schema.props )
+    // console.log( 'schema.props', schema.props )
     console.log( results )
-    // console.log( Array.from( results.get( 'pass' ) ?? [] ) )
-    // console.log( results.get( 'fail' ) )
     console.log()
 }
+
+// const foo = ( ...args ) => {
+//     console.log( { args } )
+//     console.log( args.length )
+//     console.log( args[ 0 ] )
+// }
+
+// foo()
+// foo( undefined )
