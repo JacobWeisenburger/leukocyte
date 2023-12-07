@@ -1,4 +1,4 @@
-import { Check } from './Check.ts'
+import { Check, CheckContext } from './Check.ts'
 import { IssueCode, bindMakeIssue } from './Issue.ts'
 import { Validate, makeValidate } from './Validate.ts'
 import { BaseType } from './baseTypes.ts'
@@ -24,34 +24,29 @@ export type Schema<Data, Props extends SchemaProps> = {
     }
 }
 
-export const makeSchema = <Data> () => <const Props extends SchemaProps>
-    ( {
-        props = {} as Props,
-        check = () => { },
-    }: {
-        readonly props?: Props,
-        readonly check?: Check<Props>,
-    } ): Schema<Data, Props> => {
+export const makeSchema = <Data> () => <const Props extends SchemaProps> (
+    props: Props,
+    check: Check<Props>,
+): Schema<Data, Props> => {
     const makeIssue = bindMakeIssue( props )
-
     return {
         props: { canBeNull: false, canBeUndefined: false, ...props } as const,
         validate: makeValidate<Data>(
             props,
-            ( ...args ) => {
-                const x = args[ 0 ]
-
-                if ( props.baseType === 'never' ) return makeIssue( { code: 'never', message: 'No value will pass' } )
+            ctx => {
+                if ( props.baseType === 'never' ) return makeIssue( {
+                    code: 'never', message: 'No value will pass'
+                } )
                 if ( props.baseType === 'unknown' ) return
                 if ( props.baseType === 'any' ) return
+                if ( !( 'value' in ctx ) ) return makeIssue( {
+                    code: 'required', message: 'Required'
+                } )
 
-                if ( x === undefined && props.canBeUndefined ) return
-                if ( x === null && props.canBeNull ) return
+                if ( ctx.value === undefined && props.canBeUndefined ) return
+                if ( ctx.value === null && props.canBeNull ) return
 
-                if ( args.length < 1 )
-                    return makeIssue( { code: 'required', message: 'Required' } )
-
-                return check( x, props )
+                return check( ctx as CheckContext<Props> )
             }
         ),
     }

@@ -1,6 +1,6 @@
 import { Validate } from './Validate.ts'
 import * as colors from 'std/fmt/colors.ts'
-import { AnySchema } from "./makeSchema.ts"
+import { AnySchema } from './makeSchema.ts'
 
 Function.prototype[ Symbol.for( 'Deno.customInspect' ) ] = function () {
     return colors.cyan( ( `[Function] ${ this }` ) )
@@ -54,8 +54,8 @@ export function testSchema<Schema extends AnySchema> ( schema: Schema ) {
     const results = testValues.reduce(
         ( map: Map<string, Set<any>>, x ) => {
             schema.props
-            // const result = schema.validate()
-            const result = schema.validate( x )
+            const result = schema.validate()
+            // const result = schema.validate( x )
             const key = result.pass ? passKey : result.error[ 0 ].message
             const set = map.get( key ) ?? new Set()
             return map.set( key, set.add( x ) )
