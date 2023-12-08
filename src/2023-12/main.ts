@@ -3,14 +3,14 @@
 import { l } from './mod.ts'
 import { testSchema } from './testSchema.ts'
 
-test_schema()
+// test_schema()
 function test_schema () {
     const schema = l.schema<string>()(
         {
             baseType: 'string',
             length: 3,
-            // canBeUndefined: true,
-            // canBeNull: true,
+            // allowUndefined: true,
+            // allowNull: true,
         },
         ( { value, props } ) => {
             if ( typeof value !== 'string' ) return 'Not a string'
@@ -21,36 +21,44 @@ function test_schema () {
     )
     // type Data = l.infer<typeof schema>
     schema.props.baseType
-    schema.props.canBeUndefined
-    schema.props.canBeNull
-    // const result = schema.validate( 'foo' )
-    // result.pass && result.data
+    schema.props.allowUndefined
+    schema.props.allowNull
     testSchema( schema )
 }
 
 // test_stringSchema()
-// function test_stringSchema () {
-//     const schema = l.string( {
-//         // length: 3,
-//         minLength: 3,
-//     } )
-//     // type Data = l.infer<typeof schema>
-//     schema.props.baseType
-//     schema.props.canBeUndefined
-//     schema.props.minLength
-//     const result = schema.validate( 'foo' )
-//     result.pass && result.data
-//     testSchema( schema )
-// }
+function test_stringSchema () {
+    const schema = l.string( {
+        // minLength: 3,
+        // allowUndefined: true,
+    } )
+    // type Data = l.infer<typeof schema>
+    schema.props.baseType
+    schema.props.allowUndefined
+    schema.props.allowNull
+    schema.props.length
+    schema.props.minLength
+    testSchema( schema )
+}
 
-// // test_stringSchema()
-// function test_stringSchema () {
-//     // const stringSchema = l.string()
-//     //     .nullish()
-//     // type stringType = l.infer<typeof stringSchema>
-//     // stringSchema.props.baseType
-//     // stringSchema.props.canBeUndefined
-//     // const stringResult = stringSchema.validate( 'foo' )
-//     // stringResult.success && stringResult.value
-//     // testSchema( stringSchema )
-// }
+test_errorMap()
+function test_errorMap () {
+    const schema = l.string( {
+        minLength: 3,
+        errorMap: ctx => ( {
+            // TODO get access to ctx here
+            'string:minLength': `Must be at least ${ ctx.props.minLength } characters long`,
+        } ),
+    } )
+    testSchema( schema )
+}
+
+// test_numberSchema()
+function test_numberSchema () {
+    const schema = l.number()
+    // type Data = l.infer<typeof schema>
+    schema.props.baseType
+    schema.props.allowNaN
+    schema.props.allowUndefined
+    testSchema( schema )
+}

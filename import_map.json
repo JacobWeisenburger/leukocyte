@@ -1,6 +1,7 @@
 {
     "imports": {
         "dnt": "https://deno.land/x/dnt@0.37.0/mod.ts",
-        "std/": "https://deno.land/std@0.200.0/"
+        "std/": "https://deno.land/std@0.200.0/",
+        "radash": "npm:radash"
     }
 }

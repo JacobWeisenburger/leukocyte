@@ -1,19 +1,20 @@
-import { AnySchema, makeSchema } from './makeSchema.ts'
-// import { makeStringSchema } from './makeStringSchema.ts'
 import { InferTypeFromSchema } from './baseTypes.ts'
+import { makeNumberSchema } from './makeNumberSchema.ts'
+import { AnySchema, makeSchema } from './makeSchema.ts'
+import { makeStringSchema } from './makeStringSchema.ts'
 
-export module l {
+export module leukocyte {
     export type infer<Schema extends AnySchema> = InferTypeFromSchema<Schema>
 }
 
-export const l = {
+export const leukocyte = {
     schema: makeSchema,
-    // string: makeStringSchema,
-    // number: makeNumberSchema,
+    string: makeStringSchema,
+    number: makeNumberSchema,
     // boolean: makeBooleanSchema,
     // bigint: makeBigintSchema,
     // date: makeDateSchema,
     // literal: makeLiteralSchema,
     // union: makeUnionSchema,
 }
-export { l as leukocyte }
+export { leukocyte as l }

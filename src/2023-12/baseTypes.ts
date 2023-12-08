@@ -67,6 +67,6 @@ export const baseTypeIssueCodes = (
     }[ BaseType ]
 )
 
-type test1 = any[] extends ( infer T extends string )[] ? T : false
-type test2 = never[] extends ( infer T extends string )[] ? T : false
-// type test2 = string extends never ? true : false
+// type test1 = any[] extends ( infer T extends string )[] ? T : false
+// type test2 = never[] extends ( infer T extends string )[] ? T : false
+// // type test2 = string extends never ? true : false
